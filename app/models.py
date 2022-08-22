@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 import re
+from flask_login import UserMixin
 
 
 def slugify(string):
@@ -44,4 +45,14 @@ class Tag(db.Model):
         self.slug = slugify(self.name)
 
     def __repr__(self):
+        return f'{self.name}'
+
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+
+    def __str__(self):
         return f'{self.name}'

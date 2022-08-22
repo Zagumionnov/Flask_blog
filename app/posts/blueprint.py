@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for
 from models import Post, Tag
 from .forms import PostForm # noqa
+from flask_login import login_required, current_user
 
 from flask import request
 from app import db
@@ -9,7 +10,14 @@ from app import db
 posts = Blueprint('posts', __name__, template_folder='templates')
 
 
+@posts.route('/profile')
+@login_required
+def profile():
+    return render_template('posts/profile.html', name=current_user)
+
+
 @posts.route('/create', methods=['POST', 'GET'])
+@login_required
 def create_post():
 
     if request.method == 'POST':
@@ -30,6 +38,7 @@ def create_post():
 
 
 @posts.route('/<slug>/edit/', methods=['POST', 'GET'])
+@login_required
 def edit_post(slug):
     post = Post.query.filter(Post.slug==slug).first()
 
@@ -44,8 +53,8 @@ def edit_post(slug):
     return render_template('posts/edit_post.html', post=post, form=form)
 
 
-
 @posts.route('/')
+@login_required
 def index():
     q = request.args.get('q')
 
@@ -67,6 +76,7 @@ def index():
 
 
 @posts.route('/<slug>')
+@login_required
 def post_detail(slug):
     post = Post.query.filter(Post.slug==slug).first()
     tags = post.tags
@@ -74,6 +84,7 @@ def post_detail(slug):
 
 
 @posts.route('/tag/<slug>')
+@login_required
 def tag_detail(slug):
     tag = Tag.query.filter(Tag.slug==slug).first()
     posts = tag.posts.all()

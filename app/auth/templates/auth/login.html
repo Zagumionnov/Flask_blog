@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Login
+{% endblock %}
+
+{% block content_title %}
+  Login
+{% endblock %}
+
+{% block content %}
+
+  <div class="col-md-6">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div>
+            {{ messages[0] }}
+        </div>
+    {% endif %}
+    {% endwith %}
+    <form action="{{ url_for('auth.login') }}" method="POST">
+
+      {% for field in form %}
+        <div class="form-group">
+          {{ field.label(class='control-label') }}
+          {{ field(class='form-control') }}
+        </div>
+      {% endfor %}
+
+      <div class="field">
+          <label class="checkbox">
+              <input type="checkbox">
+              Remember me
+          </label>
+      </div>
+
+      <br><button type="submit" class="btn btn-success">Login</button>
+
+    </form>
+  </div>
+
+{% endblock %}
