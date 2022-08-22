@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for
-from models import Post, Tag
+from models import Post, Tag, User
 from .forms import PostForm # noqa
 from flask_login import login_required, current_user
 
@@ -13,7 +13,7 @@ posts = Blueprint('posts', __name__, template_folder='templates')
 @posts.route('/profile')
 @login_required
 def profile():
-    return render_template('posts/profile.html', name=current_user)
+    return render_template('posts/profile.html', name=current_user.name)
 
 
 @posts.route('/create', methods=['POST', 'GET'])
@@ -23,9 +23,10 @@ def create_post():
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
+        user_id = current_user.id
 
         try:
-            post = Post(title=title, body=body)
+            post = Post(title=title, body=body, user_id=user_id)
             db.session.add(post)
             db.session.commit()
         except:
@@ -56,8 +57,8 @@ def edit_post(slug):
 @posts.route('/')
 @login_required
 def index():
-    q = request.args.get('q')
 
+    q = request.args.get('q')
     page = request.args.get('page')
 
     if page and page.isdigit():
@@ -73,6 +74,32 @@ def index():
     pages = posts.paginate(page=page, per_page=5)
 
     return render_template('posts/index.html', pages=pages)
+
+
+@posts.route('/all-bloggers')
+@login_required
+def all_bloggers():
+
+    page = request.args.get('page')
+
+    if page and page.isdigit():
+        page = int(page)
+    else:
+        page = 1
+
+    users = User.query.filter()
+
+    pages = users.paginate(page=page, per_page=5)
+
+    return render_template('posts/all_bloggers.html', pages=pages)
+
+
+@posts.route('/blogger/<id>')
+@login_required
+def user_detail(id):
+    user = User.query.filter(User.id==id).first()
+    all_posts = user.posts
+    return render_template('posts/user_detail.html', user=user, posts=all_posts)
 
 
 @posts.route('/<slug>')

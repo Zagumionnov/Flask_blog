@@ -22,6 +22,7 @@ class Post(db.Model):
     body = db.Column(db.Text)
     created = db.Column(db.DateTime, default=datetime.now())
     tags = db.relationship('Tag', secondary=post_tags, backref=db.backref('posts', lazy='dynamic'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
@@ -53,6 +54,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
+    posts = db.relationship('Post', backref='user', lazy='dynamic')
 
     def __str__(self):
         return f'{self.name}'

@@ -16,10 +16,11 @@ db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 
-from models import * # noqa
+from models import Post, Tag, User # noqa
 admin = Admin(app)
 admin.add_view(ModelView(Post, db.session))
 admin.add_view(ModelView(Tag, db.session))
+admin.add_view(ModelView(User, db.session))
 
 
 login_manager = LoginManager()
